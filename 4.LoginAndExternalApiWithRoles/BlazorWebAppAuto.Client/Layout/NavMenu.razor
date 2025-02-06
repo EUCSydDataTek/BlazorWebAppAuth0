@@ -1,0 +1,64 @@
+﻿<div class="top-row text-center text-white">
+    <AuthorizeView>
+        <Authorized Context="authContext">
+            <AuthorizeView Roles="Administrator" Context="adminContext">
+                <Authorized>
+                    Hi admin!
+                </Authorized>
+                <NotAuthorized>
+                    You are not an admin =(
+                </NotAuthorized>
+            </AuthorizeView>
+        </Authorized>
+        <NotAuthorized>
+            You are not authenticated =(
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">BlazorIntAuto</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+
+        <LogInOrOut />
+
+        <AuthorizeView>
+            <Authorized Context="authContext">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="weather">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+                    </NavLink>
+                </div>
+                <AuthorizeView Roles="Administrator" Context="adminContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="user-claims">
+                                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> User Claims
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </Authorized>
+        </AuthorizeView>
+    </nav>
+</div>
+
