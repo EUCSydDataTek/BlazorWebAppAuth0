@@ -12,6 +12,10 @@ hvor WASM projektet også kalder et External Api, men gør det via en Proxy-serv
 
 &nbsp;
 
+## Opstart
+**AppHost** skal være startup-projekt. Når Aspire viser oversigt over projekterne, klikkes på endpoint for Blazor: https://localhost:7255/
+&nbsp;
+
 ## Auth0
 Der oprettes et Api i Auth0, som f.eks. hedder *Blazor Web App External API*.
 
@@ -185,7 +189,5 @@ internal sealed class ServerWeatherForecaster(HttpClient httpClient, IHttpContex
 }
 ```
 
-## Opstart
-**AppHost** skal være startup-projekt. Når Aspire viser oversigt over projekterne, klikkes på endpoint for Blazor: https://localhost:7255/
-&nbsp;
+
 
