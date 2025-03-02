@@ -8,40 +8,36 @@ using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
 
 builder.Services
     .AddAuth0WebAppAuthentication(options =>
     {
         options.Domain = builder.Configuration["Auth0:Domain"] ?? string.Empty;
         options.ClientId = builder.Configuration["Auth0:ClientId"] ?? string.Empty;
-        // 👇 new code
         options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
-        // 👆 new code
+        
     })
-    // 👇 new code
     .WithAccessToken(options =>
     {
         options.Audience = builder.Configuration["Auth0:Audience"];
     });
-// 👆 new code
 
 builder.Services.AddAuthorization();
 
+// 👇 new code
 builder.Services.AddCascadingAuthenticationState();
 
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization();
+builder.Services.AddHttpForwarder();    // Instantiates YARP's HttpForwarder
 
-// 👇 new code
-builder.Services.AddHttpForwarderWithServiceDiscovery();
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddHttpClient<IWeatherForecaster, ServerWeatherForecaster>(httpClient =>
 {
-    httpClient.BaseAddress = new("https://weatherapi");
+    httpClient.BaseAddress = new(builder.Configuration["ExternalApiBaseAdress"]!);
 });
 // 👆 new code
 
@@ -49,8 +45,7 @@ var app = builder.Build();
 
 
 
-//////////////////////////////////////// Configure the HTTP request pipeline. ////////////////////////////////////
-
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
@@ -58,7 +53,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -68,8 +62,7 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 
-// 👇 new code
-app.MapForwarder("/weatherforecast", "https://weatherapi", transformBuilder =>
+app.MapForwarder("/weatherforecast", builder.Configuration["ExternalApiBaseAdress"]!, transformBuilder =>
 {
     transformBuilder.AddRequestTransform(async transformContext =>
     {
@@ -77,7 +70,6 @@ app.MapForwarder("/weatherforecast", "https://weatherapi", transformBuilder =>
         transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
     });
 }).RequireAuthorization();
-// 👆 new code
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
@@ -87,3 +79,4 @@ app.MapRazorComponents<App>()
 app.MapGroup("/Account").MapLoginAndLogout();
 
 app.Run();
+

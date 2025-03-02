@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApi", "WeatherApi\WeatherApi.csproj", "{BAB6AAAC-BD55-4A40-98D9-10B1D1900885}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D902BE50-FF7F-4FD7-9DBB-4130376DF6DD}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto", "BlazorWebAppAuto\BlazorWebAppAuto.csproj", "{9A8F730C-B4BC-493F-8AE6-A1ED8BC82684}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.Client", "BlazorWebAppAuto.Client\BlazorWebAppAuto.Client.csproj", "{207A4780-395E-43CF-8467-4DF8FE3D1818}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.AppHost", "BlazorWebAppAuto.AppHost\BlazorWebAppAuto.AppHost.csproj", "{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.ServiceDefaults", "BlazorWebAppAuto.ServiceDefaults\BlazorWebAppAuto.ServiceDefaults.csproj", "{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BAB6AAAC-BD55-4A40-98D9-10B1D1900885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAB6AAAC-BD55-4A40-98D9-10B1D1900885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAB6AAAC-BD55-4A40-98D9-10B1D1900885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAB6AAAC-BD55-4A40-98D9-10B1D1900885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A8F730C-B4BC-493F-8AE6-A1ED8BC82684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A8F730C-B4BC-493F-8AE6-A1ED8BC82684}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A8F730C-B4BC-493F-8AE6-A1ED8BC82684}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A8F730C-B4BC-493F-8AE6-A1ED8BC82684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{207A4780-395E-43CF-8467-4DF8FE3D1818}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{207A4780-395E-43CF-8467-4DF8FE3D1818}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{207A4780-395E-43CF-8467-4DF8FE3D1818}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{207A4780-395E-43CF-8467-4DF8FE3D1818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

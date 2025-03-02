@@ -1,193 +1,170 @@
-ï»¿# 3.LoginAndExternalApi
+# 2.LoginAndInternalApi
 
 ## Versionshistorik
 - 1.0.0: Oprettet af ECR 06-02-2025
 &nbsp;
 
 ## Use case
-Et externt WeatherApi projekt er oprettet. Authorization er tilfÃ¸jet. Projekterne styres nu af Aspire.
+Bygger videre på **1.Login projektet**. Der er tilføjet et "WeatherAPI" i Server-projektet i form af metoden: `GetWeatherForecastAsync()`, der 
+implemeterer interfacet `IWeatherForecaster`. Når Blazor i første omgang benytter Server-projektet, benyttes denne metode.
+Når Blazor skifter til Client-projektet, benyttes `ClientWeatherForecaster`, der benytter HttpClient`` til at kalde Server-projektets WeatherAPI.
+Det vil sige at både Server og Client-projektet henter data samme sted fra.
 
-Eksemplet er delvist bygget over [Call Protected APIs from a Blazor Web App](https://auth0.com/blog/call-protected-api-from-blazor-web-app/), 
-hvor WASM projektet ogsÃ¥ kalder et External Api, men gÃ¸r det via en Proxy-service i Server-projektet (BFF-pattern).
+For at undgå at data hentes flere gange, gemmes data i **ApplicationState**, således at data kun hentes én gang. Dette sker vha. af 
+servicen `PersistentComponentState`, som injectes i `WeatherForecast.razor`. I første omgang hentes data fra `ServerWeatherForecaster`, og gemmes i ApplicationState.
+Når der skiftes til `ClientWeatherForecaster`, hentes data fra ApplicationState, og ikke fra `ServerWeatherForecaster`.
 
-&nbsp;
-
-## Opstart
-**AppHost** skal vÃ¦re startup-projekt. NÃ¥r Aspire viser oversigt over projekterne, klikkes pÃ¥ endpoint for Blazor: https://localhost:7255/
-&nbsp;
-
-## Auth0
-Der oprettes et Api i Auth0, som f.eks. hedder *Blazor Web App External API*.
-
-Der skrives en Identifier, som f.eks. kan vÃ¦re: `https://blazorwebappexternalapi` (blot en logisk adresse).
-Denne Identifier skal bruges i projektet, nÃ¥r der skal tilgÃ¥s API'et, omtales der som `Audience`.
+Eksemplet er en opdateret udgave af [Call Protected APIs from a Blazor Web App](https://auth0.com/blog/call-protected-api-from-blazor-web-app/), 
+hvor WASM projektet kalder et Internal Api i Server-projektet.
 
 &nbsp;
-
-
-## WeatherApi
-
-TilfÃ¸j et standard ASP.NET Core WebApi template, med fÃ¸lgende tilfÃ¸jelser: **Enlist in .NET Aspire orchestration**
-
-Nuget:
-```xml
-<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.*" />
-```
-&nbsp;
-
-#### appsettings.json
-TilfÃ¸j fÃ¸lgende:
-```json
-{
-  "Authentication": {
-    "Schemes": {
-      "Bearer": {
-        "Authority": "https://xxxxxx.eu.auth0.com",
-        "ValidAudiences": [ "https://xxxxxxxxxxxxxxxx" ],
-        "ValidIssuer": "xxxxxx.eu.auth0.com"
-      }
-    }
-  }
-}
-```
-
-
-#### Program.cs
-
-Her tilfÃ¸jes fÃ¸lgende:
-```csharp
-// ðŸ‘‡ new code
-builder.Services.AddAuthentication().AddJwtBearer();
-builder.Services.AddAuthorization();
-// ðŸ‘† new code
-```
-
-Desuden tilfÃ¸jes `.RequireAuthorization()` efter app.MapGet()
-
-&nbsp;
-
-## AppHost
-
-AppHost-projektet skal ogsÃ¥ have en reference til BlazorWebAppAuto-projektet.
-
-Program.cs ser sÃ¥ledes ud:
-```csharp
-var builder = DistributedApplication.CreateBuilder(args);
-
-var weatherApi = builder.AddProject<Projects.WeatherApi>("weatherapi");
-
-builder.AddProject<Projects.BlazorWebAppAuto>("blazorfrontend")
-    .WithReference(weatherApi);
-    
-
-builder.Build().Run();
-```
-
-
-
-
-
-
 
 ## BlazorWebAppAuto
 
-Skal have en reference til ServiceDefaults-projektet.
+Til **Program.cs** tilføjes følgende service:
 
-**Nuget**
+```csharp
+builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
+```
 
-```xml
-<PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="9.0.*" />
+Og til HTTP request pipeline tilføjes:
+```csharp
+app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+{
+    return WeatherForecaster.GetWeatherForecastAsync();
+}).RequireAuthorization();
 ```
 
 &nbsp;
 
-**Program.cs**
+**Weather API**
 
-BÃ¥de ClientSecret og Audience skal benyttes til at kalde det eksterne API. 
+Der oprettes en ny fil Weather/ServerWeatherForecaster.cs med følgende indhold:
 ```csharp
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
+using BlazorWebAppAuto.Client.Weather;
 
-builder.Services
-    .AddAuth0WebAppAuthentication(options =>
-    {
-        options.Domain = builder.Configuration["Auth0:Domain"] ?? string.Empty;
-        options.ClientId = builder.Configuration["Auth0:ClientId"] ?? string.Empty;
-        // ðŸ‘‡ new code
-        options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
-        // ðŸ‘† new code
-    })
-    // ðŸ‘‡ new code
-    .WithAccessToken(options =>
-    {
-        options.Audience = builder.Configuration["Auth0:Audience"];
-    });
-// ðŸ‘† new code
-```
+namespace BlazorWebAppAuto.Weather;
 
-Der tilfÃ¸jes forskellige services:
-
-```csharp
-// ðŸ‘‡ new code
-builder.Services.AddHttpForwarderWithServiceDiscovery();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient<IWeatherForecaster, ServerWeatherForecaster>(httpClient =>
+public class ServerWeatherForecaster() : IWeatherForecaster
 {
-    httpClient.BaseAddress = new("https://weatherapi");
-});
-// ðŸ‘† new code
-```` 
+    public readonly string[] summaries =
+    [
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    ];
 
-Der benyttes en HTTP Forwarder til at hÃ¥ndtere service discovery og routing (YARP): 
-```csharp
-// ðŸ‘‡ new code
-app.MapForwarder("/weatherforecast", "https://weatherapi", transformBuilder =>
-{
-    transformBuilder.AddRequestTransform(async transformContext =>
-    {
-        var accessToken = await transformContext.HttpContext.GetTokenAsync("access_token");
-        transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
-    });
-}).RequireAuthorization();
-// ðŸ‘† new code
-```
-
-#### Appsettings.json 
-```json
-{
-  "Auth0": {
-    "Domain": "your-auth0-domain",
-    "ClientId": "your-auth0-client-id",
-    "ClientSecret": "your-auth0-client-secret", // ðŸ‘ˆ new key
-    "Audience": "your-auth0-audience"           // ðŸ‘ˆ new key
-  }
-}
-```
-
-#### ServerWeatherForecaster
-Denne klasse er nu Ã¦ndret til at benytte en HttpClient og en service discovery:
-```csharp
-internal sealed class ServerWeatherForecaster(HttpClient httpClient, IHttpContextAccessor httpContextAccessor) : IWeatherForecaster
-{
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {
-        var httpContext = httpContextAccessor.HttpContext ??
-            throw new InvalidOperationException("No HttpContext available from the IHttpContextAccessor!");
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
 
-        var accessToken = await httpContext.GetTokenAsync("access_token") ??
-            throw new InvalidOperationException("No access_token was saved");
-
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/weatherforecast");
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);
-        using var response = await httpClient.SendAsync(requestMessage);
-
-        response.EnsureSuccessStatusCode();
-
-        return await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
-            throw new IOException("No weather forecast!");
+        return Enumerable.Range(1, 5).Select(index =>
+            new WeatherForecast
+            (
+                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                Random.Shared.Next(-20, 55),
+                summaries[Random.Shared.Next(summaries.Length)]
+            ))
+        .ToArray();
     }
 }
 ```
 
 
+&nbsp;
 
+## BlazorWebAppAuto.Client
+#### Nugets
+`<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.*" />`
+
+&nbsp;
+
+Til Program.cs tilføjes følgende service:
+```csharp
+builder.Services.AddHttpClient<IWeatherForecaster, ClientWeatherForecaster>(httpClient =>
+{
+    httpClient.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+```
+
+&nbsp;
+
+#### Weather API
+
+I folderen **Weather** oprettes følgende 3 filer:
+
+`WeatherForecast.cs`:
+```csharp
+public sealed class WeatherForecast(DateOnly date, int temperatureC, string summary)
+{
+    public DateOnly Date { get; set; } = date;
+    public int TemperatureC { get; set; } = temperatureC;
+    public string? Summary { get; set; } = summary;
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+```
+
+&nbsp;
+
+
+`IWeatherForecaster.cs`
+```csharp
+public interface IWeatherForecaster
+{
+    Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync();
+}
+```
+
+&nbsp;
+
+`ClientWeatherForecaster.cs`
+```csharp
+internal sealed class ClientWeatherForecaster(HttpClient httpClient) : IWeatherForecaster
+{
+    public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync() =>
+        await httpClient.GetFromJsonAsync<WeatherForecast[]>("/weather-forecast") ??
+            throw new IOException("No weather forecast!");
+}
+```
+
+&nbsp;
+
+#### Weather.razor
+
+Følgende tilføjes øverst i filen:
+```csharp
+@using BlazorWebAppAuto.Client.Weather
+@implements IDisposable
+@inject PersistentComponentState ApplicationState
+@inject IWeatherForecaster WeatherForecaster
+```
+
+Code-delen ændres til:
+```csharp
+@code {
+    private IEnumerable<WeatherForecast>? forecasts;
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    protected override async Task OnInitializedAsync()
+    {
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(nameof(forecasts), out var restoredData))
+        {
+            forecasts = await WeatherForecaster.GetWeatherForecastAsync();
+        }
+        else
+        {
+            forecasts = restoredData!;
+        }
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(nameof(forecasts), forecasts);
+
+        return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
+}
+```

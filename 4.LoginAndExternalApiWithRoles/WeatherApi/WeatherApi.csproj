@@ -11,8 +11,4 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.*" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\BlazorWebAppAuto.ServiceDefaults\BlazorWebAppAuto.ServiceDefaults.csproj" />
-	</ItemGroup>
-
 </Project>

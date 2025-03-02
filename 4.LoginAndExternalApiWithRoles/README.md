@@ -1,15 +1,17 @@
 ﻿# 4.LoginAndExternalApiWithRoles
 
 ## Versionshistorik
-- 1.0.0: Oprettet af ECR 06-02-2025
+- 1.0.1: Oprettet af ECR 02-03-2025
 &nbsp;
 
 ## Use case
-I Auth0 er der oprettet to Permissionsk, samt to roller der knytter Permissions sammen. 
+I Auth0 er der oprettet to Permissions, samt to roller der knytter Permissions sammen. 
 Der er lavet håndtering af en 404 ifald der webbes et ugyldigt endpoint.
-Projekterne styres af Aspire.
 &nbsp;
 
+## Opstart
+Højre klik på Solution og sæt både WatherApi og BlazorWebAppAuto til at starte.
+&nbsp;
 
 ## Auth0
 Der oprettes nogle Permissions, som samles i Roller. Gå ind under *Applications/APIs*, vælg det aktuelle Api og klik på fanen *Permissions*.
@@ -41,7 +43,7 @@ I Pages/UserClaims.razor ændres Authorize attributten til:
 ```html
 @attribute [Authorize(Roles = "Administrator")]
 ```
-
+&nbsp;
 
 **404 håndtering**
 
@@ -54,7 +56,7 @@ Der oprettes en ny component i Pages, kaldet NotFound.razor. Denne vises, hvis d
 <p>Sorry, the page you are looking for does not exist.</p>
 ```
 
-I componenten *Routes.razor* udvides switch'en med en Route til NotFound:
+I componenten *Routes.razor* udvides switch'en med en Route til `NotFound`:
 ```html
 @using BlazorWebAppAuto.Client.Pages
 
@@ -74,6 +76,7 @@ I componenten *Routes.razor* udvides switch'en med en Route til NotFound:
      </NotFound>
 </Router>
 ```
+&nbsp;
 
 I NavMenu componenten vises om brugeren er medlem af Administrator-rollen. 
 I menuen er der lavet følgende logik:
@@ -155,7 +158,7 @@ vises "Counter".
 
 #### Program.cs
 
-Her erstattes AddAuthorization() med følgende:
+Her erstattes `AddAuthorization()` med følgende:
 ```csharp
 builder.Services.AddAuthorizationBuilder()
   .AddPolicy("ReadPolicy", p => p.RequireAuthenticatedUser().RequireClaim("permissions", "read:weatherforecast"))
@@ -169,5 +172,3 @@ Desuden tilføjes `.RequireAuthorization("ReadPolicy")` efter app.MapGet().
 
 &nbsp;
 
-## Opstart
-**AppHost** skal være startup-projekt. Når Aspire viser oversigt over projekterne, klikkes på endpoint for Blazor: https://localhost:7255/

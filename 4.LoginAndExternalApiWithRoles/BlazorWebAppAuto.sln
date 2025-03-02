@@ -14,10 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto", "BlazorW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.Client", "BlazorWebAppAuto.Client\BlazorWebAppAuto.Client.csproj", "{207A4780-395E-43CF-8467-4DF8FE3D1818}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.AppHost", "BlazorWebAppAuto.AppHost\BlazorWebAppAuto.AppHost.csproj", "{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.ServiceDefaults", "BlazorWebAppAuto.ServiceDefaults\BlazorWebAppAuto.ServiceDefaults.csproj", "{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,16 +32,11 @@ Global
 		{207A4780-395E-43CF-8467-4DF8FE3D1818}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{207A4780-395E-43CF-8467-4DF8FE3D1818}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{207A4780-395E-43CF-8467-4DF8FE3D1818}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0CC5B385-F93C-469F-ACF3-349F0D071F24}
 	EndGlobalSection
 EndGlobal

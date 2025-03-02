@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 
 namespace BlazorWebAppAuto.Weather;
+
 internal sealed class ServerWeatherForecaster(HttpClient httpClient, IHttpContextAccessor httpContextAccessor) : IWeatherForecaster
 {
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
@@ -13,7 +14,9 @@ internal sealed class ServerWeatherForecaster(HttpClient httpClient, IHttpContex
             throw new InvalidOperationException("No access_token was saved");
 
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/weatherforecast");
+
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
+
         using var response = await httpClient.SendAsync(requestMessage);
 
         response.EnsureSuccessStatusCode();
