@@ -4,7 +4,7 @@ Dette repository indeholder 4 projekter, som viser hvordan en Blazor Web App (.N
 
 **2.LoginAndInternalApi** bygger på 1.Login, men indeholder nu et internt Minimal WebApi (WeatherForecast) i Server-projektet
 
-**3.LoginAndExternalApi** bygger på 2.LoginAndInternalApi, men nu er WeatherForecast Api'et flyttet ud som et eksternt WebApi med authorization.
+**3.LoginAndExternalApi** bygger på 2.LoginAndInternalApi, men nu er WeatherForecast Api'et flyttet ud som et eksternt Minimal WebApi med authorization.
 
 **3.LoginAndExternalApiAspire** bygger på 2.LoginAndInternalApi, men nu er WeatherForecast Api'et flyttet ud som et eksternt Minimal WebApi med authorization. Der benyttes desuden Aspire.
 
