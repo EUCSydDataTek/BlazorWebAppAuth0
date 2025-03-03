@@ -6,7 +6,7 @@ Dette repository indeholder 4 projekter, som viser hvordan en Blazor Web App (.N
 
 **3.LoginAndExternalApi** bygger på 2.LoginAndInternalApi, men nu er WeatherForecast Api'et flyttet ud som et eksternt WebApi med authorization.
 
-**3.LoginAndExternalApiAspire** bygger på 2.LoginAndInternalApi, men nu er WeatherForecast Api'et flyttet ud som et eksternt WebApi med authorization. Der benyttes desuden Aspire.
+**3.LoginAndExternalApiAspire** bygger på 2.LoginAndInternalApi, men nu er WeatherForecast Api'et flyttet ud som et eksternt Minimal WebApi med authorization. Der benyttes desuden Aspire.
 
 **4.LoginAndExternalApiWithRoles** er en udvidelse af 3.LoginAndExternalApi med "Roles" i WebApi, hvor scopes omsættes til en Policy. Desuden håndteres 404 fejl.
 
