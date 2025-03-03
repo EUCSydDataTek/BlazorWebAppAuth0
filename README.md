@@ -1,4 +1,4 @@
-Dette repository indeholder 4 projekter, som viser hvordan en Blazor Web App (.NET-9) tilføjes authentication og authorization med Auth0:
+Dette repository indeholder 4 projekter, som viser hvordan en Blazor Web App (.NET-9) tilføjes authentication og authorization med Auth0, samt 2 projekter udvidet med Aspire:
 
 **1.Login** er en demo af en Blazor WebApp med Global Auto-rendering og med Login/Logout. 
 
