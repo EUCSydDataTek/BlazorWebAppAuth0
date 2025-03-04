@@ -21,8 +21,8 @@ Eksemplet er en opdateret udgave af [Add Auth0 Authentication to Blazor Web Apps
 
 ## Auth0
 - Opret en *Application* som en *Regular Web Application*, her kaldet `Blazor Web App`
-- Udfyld *Allowed Callback URLs* med aktuel adresse, f.eks. `https://localhost:7094/callback`
-- Udfyld *Allowed Logout URLs* med aktuel adresse, f.eks. `https://localhost:7094/`
+- Udfyld *Allowed Callback URLs* med aktuel adresse, f.eks. `https://localhost:7255/callback`
+- Udfyld *Allowed Logout URLs* med aktuel adresse, f.eks. `https://localhost:7255/`
 - Resten er default værdier
 
 `appsettings.json` i *BlazorWebAppAuto* projektet skal udfyldes med de nødvendige værdier fra Auth0:
@@ -31,7 +31,7 @@ Eksemplet er en opdateret udgave af [Add Auth0 Authentication to Blazor Web Apps
   "Auth0": {
 	"Domain": "dev-xxxxxx.eu.auth0.com",
 	"ClientId": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  }
+}
 ```
 Alternativt kan man benytte *User Secrets* til at gemme disse værdier (anbefales).)
 
