@@ -5,6 +5,8 @@ using BlazorWebAppAuto.Components;
 using BlazorWebAppAuto.Weather;
 using Microsoft.AspNetCore.Authentication;
 using Yarp.ReverseProxy.Transforms;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,10 +40,13 @@ builder.Services.AddHttpClient<IWeatherForecaster, ServerWeatherForecaster>(http
     httpClient.BaseAddress = new(builder.Configuration["ExternalApiBaseAdress"]!);
 });
 
+builder.Services.AddLocalization();
+
 var app = builder.Build();
 
 
 //////////////////////////////////////// Configure the HTTP request pipeline. ///////////////////////////////////////
+app.UseRequestLocalization("da-DK");    // Set the default server culture to Danish https://learn.microsoft.com/en-us/aspnet/core/blazor/globalization-localization?view=aspnetcore-9.0#statically-set-the-server-side-cultur
 
 app.UseStatusCodePagesWithReExecute("/Error/{0}"); // Handles 404 etc.
 

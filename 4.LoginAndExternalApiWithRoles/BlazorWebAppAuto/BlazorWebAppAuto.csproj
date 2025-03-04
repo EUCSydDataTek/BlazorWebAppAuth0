@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>b3168e49-9e31-4387-96dd-04eff1277acb</UserSecretsId>
+		<!--<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>-->
 	</PropertyGroup>
 
 	<ItemGroup>
