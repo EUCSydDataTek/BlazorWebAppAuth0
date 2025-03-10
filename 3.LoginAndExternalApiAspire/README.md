@@ -18,7 +18,7 @@ Samme solution som **3.LoginAndExternalApi**, men projekterne styres nu af **Asp
 ## WeatherApi
 
 Tilføj et standard ASP.NET Core WebApi template, med følgende tilføjelser: **Enlist in .NET Aspire orchestration**.
-Derved oprettes både **AppHost** og **ServiceDefaults** projekterne.
+Derved oprettes både **AppHost** og **ServiceDefaults** projekterne, som her er flyttet til en Solution-folder kaldet **Aspire**.
 
 Indholdet er det samme som i 3.LoginAndExternalApi.
 &nbsp;
