@@ -6,11 +6,12 @@
 
 ## Use case
 I Auth0 er der oprettet to Permissions, samt to roller der knytter Permissions sammen. 
+
 Der er lavet håndtering af en 404 ifald der webbes et ugyldigt endpoint.
 &nbsp;
 
 ## Opstart
-Højre klik på Solution og sæt både WatherApi og BlazorWebAppAuto til at starte.
+Højre klik på Solution og sæt både WeatherApi og BlazorWebAppAuto til at starte.
 &nbsp;
 
 ## Auth0
@@ -47,7 +48,7 @@ I Pages/UserClaims.razor ændres Authorize attributten til:
 
 **404 håndtering**
 
-Der oprettes en ny component i Pages, kaldet NotFound.razor. Denne vises, hvis der navigeres til et ugyldigt endpoint.
+Der oprettes en ny component i Pages, kaldet `NotFound.razor`. Denne vises, hvis der navigeres til et ugyldigt endpoint.
 ```html
 @page "/Error/404"
 @page "/NotFound"
