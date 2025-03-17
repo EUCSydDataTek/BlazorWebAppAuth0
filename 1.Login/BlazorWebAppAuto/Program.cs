@@ -3,7 +3,11 @@ using BlazorWebAppAuto;
 using BlazorWebAppAuto.Components;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
+
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(); // new code
 
 // 👇 new code
 builder.Services
@@ -15,11 +19,6 @@ builder.Services
 
 builder.Services.AddAuthorization();
 // 👆 new code
-
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization(); // new code
 
 var app = builder.Build();
 

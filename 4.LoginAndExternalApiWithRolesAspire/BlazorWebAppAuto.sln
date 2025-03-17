@@ -5,7 +5,7 @@ VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApi", "WeatherApi\WeatherApi.csproj", "{BAB6AAAC-BD55-4A40-98D9-10B1D1900885}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D902BE50-FF7F-4FD7-9DBB-4130376DF6DD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D902BE50-FF7F-4FD7-9DBB-4130376DF6DD}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
@@ -17,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.AppHost", "BlazorWebAppAuto.AppHost\BlazorWebAppAuto.AppHost.csproj", "{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppAuto.ServiceDefaults", "BlazorWebAppAuto.ServiceDefaults\BlazorWebAppAuto.ServiceDefaults.csproj", "{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,5 +49,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF3B77D6-2A35-4CE4-94B8-5678535FFF5E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{42FB07F6-D7BE-45F1-BAF7-F50C329F68EC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 EndGlobal

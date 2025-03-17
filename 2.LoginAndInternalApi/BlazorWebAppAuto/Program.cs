@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
+
 builder.Services
     .AddAuth0WebAppAuthentication(options =>
     {
@@ -16,11 +21,6 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
-
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization();
 
 // 👇 new code
 builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
@@ -47,7 +47,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 
 // 👇 new code
-app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+app.MapGet("/weatherforecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
 {
     return WeatherForecaster.GetWeatherForecastAsync();
 }).RequireAuthorization();

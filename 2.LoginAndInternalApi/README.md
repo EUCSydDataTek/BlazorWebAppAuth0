@@ -7,12 +7,12 @@
 ## Use case
 Bygger videre på **1.Login projektet**. Der er tilføjet et "WeatherAPI" i Server-projektet i form af metoden: `GetWeatherForecastAsync()`, der 
 implemeterer interfacet `IWeatherForecaster`. Når Blazor i første omgang benytter Server-projektet, benyttes denne metode.
-Når Blazor skifter til Client-projektet, benyttes `ClientWeatherForecaster`, der benytter HttpClient`` til at kalde Server-projektets WeatherAPI.
-Det vil sige at både Server og Client-projektet henter data samme sted fra.
+Når Blazor skifter til Client-projektet, benyttes `ClientWeatherForecaster`, der benytter `HttpClient` til at kalde Server-projektets WeatherAPI.
+Det betyder at både Server og Client-projektet henter data fra samme sted.
 
-For at undgå at data hentes flere gange, gemmes data i **ApplicationState**, således at data kun hentes én gang. Dette sker vha. af 
+For at undgå at data hentes flere gange (Pre-rendering samt normal rendering), gemmes data i **ApplicationState**, således at data kun hentes én gang. Dette sker vha. af 
 servicen `PersistentComponentState`, som injectes i `WeatherForecast.razor`. I første omgang hentes data fra `ServerWeatherForecaster`, og gemmes i ApplicationState.
-Når der skiftes til `ClientWeatherForecaster`, hentes data fra ApplicationState, og ikke fra `ServerWeatherForecaster`.
+Når der skiftes til `ClientWeatherForecaster`, hentes data fra `ApplicationState`, og ikke fra `ServerWeatherForecaster`.
 
 Eksemplet er en opdateret udgave af [Call Protected APIs from a Blazor Web App](https://auth0.com/blog/call-protected-api-from-blazor-web-app/), 
 hvor WASM projektet kalder et Internal Api i Server-projektet.
@@ -29,7 +29,7 @@ builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
 Og til HTTP request pipeline tilføjes:
 ```csharp
-app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+app.MapGet("/weatherforecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
 {
     return WeatherForecaster.GetWeatherForecastAsync();
 }).RequireAuthorization();
@@ -121,7 +121,7 @@ public interface IWeatherForecaster
 internal sealed class ClientWeatherForecaster(HttpClient httpClient) : IWeatherForecaster
 {
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync() =>
-        await httpClient.GetFromJsonAsync<WeatherForecast[]>("/weather-forecast") ??
+        await httpClient.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast") ??
             throw new IOException("No weather forecast!");
 }
 ```
