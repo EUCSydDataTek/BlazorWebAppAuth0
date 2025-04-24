@@ -147,7 +147,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection(); 
 
 var summaries = new[]
 {
