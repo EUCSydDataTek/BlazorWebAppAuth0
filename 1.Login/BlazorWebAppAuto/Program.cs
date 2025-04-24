@@ -3,7 +3,6 @@ using BlazorWebAppAuto;
 using BlazorWebAppAuto.Components;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
 
 // 👇 new code
 builder.Services

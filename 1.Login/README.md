@@ -32,6 +32,7 @@ Eksemplet er en opdateret udgave af [Add Auth0 Authentication to Blazor Web Apps
 	"Domain": "dev-xxxxxx.eu.auth0.com",
 	"ClientId": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   }
+}
 ```
 Alternativt kan man benytte *User Secrets* til at gemme disse værdier (anbefales).)
 
