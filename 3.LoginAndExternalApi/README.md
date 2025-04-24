@@ -1,170 +1,196 @@
-# 2.LoginAndInternalApi
+ï»¿# 3.LoginAndExternalApi
 
 ## Versionshistorik
-- 1.0.0: Oprettet af ECR 06-02-2025
+- 1.0.0: Oprettet af ECR 10-03-2025
 &nbsp;
 
 ## Use case
-Bygger videre på **1.Login projektet**. Der er tilføjet et "WeatherAPI" i Server-projektet i form af metoden: `GetWeatherForecastAsync()`, der 
-implemeterer interfacet `IWeatherForecaster`. Når Blazor i første omgang benytter Server-projektet, benyttes denne metode.
-Når Blazor skifter til Client-projektet, benyttes `ClientWeatherForecaster`, der benytter HttpClient`` til at kalde Server-projektets WeatherAPI.
-Det vil sige at både Server og Client-projektet henter data samme sted fra.
+Bygger videre pÃ¥ **2.LoginAndInternalApi**. Der er tilfÃ¸jet et externt WeatherApi, der implemeterer interfacet `IWeatherForecaster`. 
+NÃ¥r Blazor i fÃ¸rste omgang benytter Server-projektet og `GetWeatherForecastAsync()` kaldes, sÃ¥ er det den udgave af metoden som bor i `ServerWeatherforecaster`, 
+som kÃ¸res og som henter data fra WeatherApi.
+NÃ¥r Blazor skifter til WASM (Client-projektet), benyttes `GetWeatherForecastAsync()` i `ClientWeatherForecaster`, som via HttpClient kalder en reverse proxy i Server-projektet.
+Proxyen tilfÃ¸jer AccessToken og sender forespÃ¸rgslen videre til det eksterne WeatherApi.
+Det vil sige at bÃ¥de Server og Client-projektet henter data fra samme eksterne Api, men gÃ¸r det ad to forskellige veje..
 
-For at undgå at data hentes flere gange, gemmes data i **ApplicationState**, således at data kun hentes én gang. Dette sker vha. af 
-servicen `PersistentComponentState`, som injectes i `WeatherForecast.razor`. I første omgang hentes data fra `ServerWeatherForecaster`, og gemmes i ApplicationState.
-Når der skiftes til `ClientWeatherForecaster`, hentes data fra ApplicationState, og ikke fra `ServerWeatherForecaster`.
-
-Eksemplet er en opdateret udgave af [Call Protected APIs from a Blazor Web App](https://auth0.com/blog/call-protected-api-from-blazor-web-app/), 
-hvor WASM projektet kalder et Internal Api i Server-projektet.
+Eksemplet er en opdateret udgave af [Blazor Web App with OpenID Connect (OIDC) (BFF Pattern)](https://github.com/dotnet/blazor-samples/tree/main/9.0/BlazorWebAppOidcBff), 
+hvor OIDC er skiftet ud med Auth0.
 
 &nbsp;
 
 ## BlazorWebAppAuto
 
-Til **Program.cs** tilføjes følgende service:
+Nugets: 
+- Microsoft.Extensions.ServiceDiscovery.Yarp
+- Auth0.AspNetCore.Authentication
 
-```csharp
-builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
+`appsettings.json` eller *User Secret*s opdateres til fÃ¸lgende:
+```json
+{
+  "Auth0": {
+    "Domain": "xxxx.xx.auth0.com",
+    "ClientId": "???",
+    "ClientSecret": "???",
+    "Audience": "https://blazorwebappexternalapi"
+  },
+  "ExternalApiBaseAdress": "https://localhost:????"
+}
 ```
 
-Og til HTTP request pipeline tilføjes:
+Til **Program.cs** tilfÃ¸jes ClientSecret og Audience:
+
 ```csharp
-app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+builder.Services
+    .AddAuth0WebAppAuthentication(options =>
+    {
+        options.Domain = builder.Configuration["Auth0:Domain"] ?? string.Empty;
+        options.ClientId = builder.Configuration["Auth0:ClientId"] ?? string.Empty;
+        options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
+        
+    })
+    .WithAccessToken(options =>
+    {
+        options.Audience = builder.Configuration["Auth0:Audience"];
+    });
+```
+
+Desuden registreres fÃ¸lgende services:
+```csharp
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddHttpForwarder();    // Instantiates YARP's HttpForwarder
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient<IWeatherForecaster, ServerWeatherForecaster>(httpClient =>
 {
-    return WeatherForecaster.GetWeatherForecastAsync();
+    httpClient.BaseAddress = new(builder.Configuration["ExternalApiBaseAdress"]!);
+});
+```
+
+
+Og til HTTP request pipeline tilfÃ¸jes:
+```csharp
+app.MapForwarder("/weatherforecast", builder.Configuration["ExternalApiBaseAdress"]!, transformBuilder =>
+{
+    transformBuilder.AddRequestTransform(async transformContext =>
+    {
+        var accessToken = await transformContext.HttpContext.GetTokenAsync("access_token");
+        transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
+    });
 }).RequireAuthorization();
 ```
-
 &nbsp;
 
-**Weather API**
-
-Der oprettes en ny fil Weather/ServerWeatherForecaster.cs med følgende indhold:
+`ServerWeatherForecaster.cs` skal nu have fÃ¸lgende indhold:
 ```csharp
-using BlazorWebAppAuto.Client.Weather;
-
-namespace BlazorWebAppAuto.Weather;
-
-public class ServerWeatherForecaster() : IWeatherForecaster
+internal sealed class ServerWeatherForecaster(HttpClient httpClient, IHttpContextAccessor httpContextAccessor) : IWeatherForecaster
 {
-    public readonly string[] summaries =
-    [
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    ];
-
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
+        var httpContext = httpContextAccessor.HttpContext ??
+            throw new InvalidOperationException("No HttpContext available from the IHttpContextAccessor!");
 
-        return Enumerable.Range(1, 5).Select(index =>
-            new WeatherForecast
-            (
-                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
-            ))
-        .ToArray();
+        var accessToken = await httpContext.GetTokenAsync("access_token") ??
+            throw new InvalidOperationException("No access_token was saved");
+
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/weatherforecast");
+
+        requestMessage.Headers.Authorization = new("Bearer", accessToken);
+
+        using var response = await httpClient.SendAsync(requestMessage);
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
+            throw new IOException("No weather forecast!");
     }
 }
 ```
 
 
+
+
 &nbsp;
+
+
 
 ## BlazorWebAppAuto.Client
-#### Nugets
-`<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.*" />`
+
+Ingen Ã¦ndringer
 
 &nbsp;
 
-Til Program.cs tilføjes følgende service:
+
+## Weather API
+Der oprettes en nyt Minimal ASP.NET WebApi kaldet `WeatherApi`.
+
+Nugets:
+- Microsoft.AspNetCore.Authentication.JwtBearer
+
+Program.cs skal have fÃ¸lgende indhold:
 ```csharp
-builder.Services.AddHttpClient<IWeatherForecaster, ClientWeatherForecaster>(httpClient =>
+var builder = WebApplication.CreateBuilder(args);
+
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+
+// ðŸ‘‡ new code
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
+// ðŸ‘† new code
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    httpClient.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-});
-```
+    app.MapOpenApi();
+}
 
-&nbsp;
+app.UseHttpsRedirection();
 
-#### Weather API
-
-I folderen **Weather** oprettes følgende 3 filer:
-
-`WeatherForecast.cs`:
-```csharp
-public sealed class WeatherForecast(DateOnly date, int temperatureC, string summary)
+var summaries = new[]
 {
-    public DateOnly Date { get; set; } = date;
-    public int TemperatureC { get; set; } = temperatureC;
-    public string? Summary { get; set; } = summary;
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+};
+
+app.MapGet("/weatherforecast", () =>
+{
+    var forecast = Enumerable.Range(1, 5).Select(index =>
+        new WeatherForecast
+        (
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+        .ToArray();
+    return forecast;
+})
+.WithName("GetWeatherForecast")
+.RequireAuthorization()
+.WithOpenApi();
+
+app.Run();
+
+internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
 ```
 
 &nbsp;
 
-
-`IWeatherForecaster.cs`
-```csharp
-public interface IWeatherForecaster
+FÃ¸lgende konfiguration tilfÃ¸jes enten til appsettings.cs eller User Secrets:
+```json
 {
-    Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync();
-}
-```
-
-&nbsp;
-
-`ClientWeatherForecaster.cs`
-```csharp
-internal sealed class ClientWeatherForecaster(HttpClient httpClient) : IWeatherForecaster
-{
-    public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync() =>
-        await httpClient.GetFromJsonAsync<WeatherForecast[]>("/weather-forecast") ??
-            throw new IOException("No weather forecast!");
-}
-```
-
-&nbsp;
-
-#### Weather.razor
-
-Følgende tilføjes øverst i filen:
-```csharp
-@using BlazorWebAppAuto.Client.Weather
-@implements IDisposable
-@inject PersistentComponentState ApplicationState
-@inject IWeatherForecaster WeatherForecaster
-```
-
-Code-delen ændres til:
-```csharp
-@code {
-    private IEnumerable<WeatherForecast>? forecasts;
-    private PersistingComponentStateSubscription persistingSubscription;
-
-    protected override async Task OnInitializedAsync()
-    {
-        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
-
-        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(nameof(forecasts), out var restoredData))
-        {
-            forecasts = await WeatherForecaster.GetWeatherForecastAsync();
-        }
-        else
-        {
-            forecasts = restoredData!;
-        }
+  "Authentication": {
+    "Schemes": {
+      "Bearer": {
+        "Authority": "https://xxxx.xx.auth0.com",
+        "ValidAudiences": [ ???" ],
+        "ValidIssuer": "xxxx.xx.auth0.com"
+      }
     }
-
-    private Task PersistData()
-    {
-        ApplicationState.PersistAsJson(nameof(forecasts), forecasts);
-
-        return Task.CompletedTask;
-    }
-
-    void IDisposable.Dispose() => persistingSubscription.Dispose();
+  }
 }
 ```

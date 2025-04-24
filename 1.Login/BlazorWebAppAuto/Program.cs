@@ -4,6 +4,11 @@ using BlazorWebAppAuto.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(); // new code
+
 // 👇 new code
 builder.Services
     .AddAuth0WebAppAuthentication(options =>
@@ -14,11 +19,6 @@ builder.Services
 
 builder.Services.AddAuthorization();
 // 👆 new code
-
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization(); // new code
 
 var app = builder.Build();
 

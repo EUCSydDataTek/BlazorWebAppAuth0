@@ -9,9 +9,9 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BlazorWebAppAuto.Client\BlazorWebAppAuto.Client.csproj" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.*" />
 
-		<PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.4.1" />
+		<PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.4.*" />
 	</ItemGroup>
 
 </Project>
