@@ -1,31 +1,33 @@
-﻿# 4.LoginAndExternalApiWithRoles
+﻿# 4.LoginAndExternalApiWithRolesAspire
 
 ## Versionshistorik
 - 1.0.0: Oprettet af ECR 06-02-2025
 &nbsp;
 
 ## Use case
+Projektet er en videreudvikling af **3.LoginAndExternalApiAspire**.
+
 I Auth0 er der oprettet to Permissions, samt to roller der knytter Permissions sammen. 
 Der er lavet håndtering af en 404 ifald der webbes et ugyldigt endpoint.
 Projekterne styres af Aspire.
 &nbsp;
 
 ## Opstart
-**AppHost** skal være startup-projekt. Når Aspire viser oversigt over projekterne, klikkes på endpoint for Blazor: https://localhost:7255/
+**AppHost** skal være startup-projekt. Når Aspire viser oversigt over projekterne, klikkes på endpoint for Blazor: `https://localhost:7255`.
 &nbsp;
 
 ## Auth0
-Der oprettes nogle Permissions, som samles i Roller. Gå ind under *Applications/APIs*, vælg det aktuelle Api og klik på fanen *Permissions*.
+Der oprettes nogle *Permissions*, som samles i *Roles*. Gå ind under *Applications | APIs*, vælg det aktuelle Api og klik på fanen *Permissions*.
 Her kan der oprettes Permissions, som kan tildeles til Roller. Opret f.eks. en Permission med navnet *read:weatherforecast* og en Permission med navnet *write:weatherforecast*.
 
-Under *User Management/Roles* kan der oprettes Roller, som kan tildeles til brugere. Opret f.eks. en Rolle med navnet *WeatherReader* og en Rolle med navnet *WeatherWriter*. 
-Disse Roller tildeles de respektive Permissions. Opret f.eks. en rolle med navnet: **ReadWeatherRole** og tildel den Permissionen *read:weatherforecast*
+Under *User Management | Roles* kan der oprettes *Roles*, der tildeles *Permissions* og som til sidst tilknyttes en *User*. 
+Opret f.eks. en Role med navnet: **ReadWeatherRole** og tildel den Permissionen *read:weatherforecast*
 ved at gå til Permissions-fanen. 
-På samme måde kan der oprettes en rolle med navnet: **ReadWriteWeatherRole** og tildel den Permissionen både *read:weatherforecast* og *write:weatherforecast*.
+På samme måde oprettes en Role med navnet: **ReadWriteWeatherRole** og den tildeles både *read:weatherforecast* og *write:weatherforecast* Permissions.
 
-I eksemplet er der også oprettet en Rolle med navnet **Administrator**. 
+I eksemplet er der også oprettet en Role med navnet **Administrator**. 
 
-Tilsidst går man til Users-fanen og tildeler brugeren de nye roller.
+Tilsidst går man til *User Management | Users* og tildeler den ønskede *User* de(n) nye roller.
 
 &nbsp;
 
