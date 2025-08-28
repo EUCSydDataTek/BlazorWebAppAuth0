@@ -9,7 +9,20 @@ builder.Services.AddAuthentication().AddJwtBearer();
 builder.Services.AddAuthorizationBuilder()
   .AddPolicy("ReadPolicy", p => p.RequireAuthenticatedUser().RequireClaim("permissions", "read:weatherforecast"))
   .AddPolicy("WritePolicy", p => p.RequireAuthenticatedUser().RequireClaim("permissions", "write:weatherforecast"));
-// 👆 new code
+
+
+// Allow CORS
+//var allowedOrigin = builder.Configuration["AllowedCorsOrigin"];
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", policy =>
+//    {
+//        policy.WithOrigins(allowedOrigin!)
+//              .AllowAnyHeader()
+//              .AllowAnyMethod();
+//    });
+//});
 
 var app = builder.Build();
 
@@ -20,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+//app.UseCors("AllowFrontend");
 
 var summaries = new[]
 {
