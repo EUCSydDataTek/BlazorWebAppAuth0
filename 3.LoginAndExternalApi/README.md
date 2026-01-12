@@ -2,6 +2,7 @@
 
 ## Versionshistorik
 - 1.0.0: Oprettet af ECR 10-03-2025
+- 1.1.0: Opdateret af ECR 12-01-2026 (.NET 10)
 &nbsp;
 
 ## Use case
