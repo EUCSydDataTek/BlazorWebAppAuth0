@@ -5,7 +5,7 @@
 &nbsp;
 
 ## UseCase
-Demonstrerer Authentication med **Auth0** i et .NET 9 Blazor WebApp projekt med **Global Auto Rendering**.
+Demonstrerer Authentication med **Auth0** i et .NET 10 Blazor WebApp projekt med **Global Auto Rendering**.
 
 - Home: Anonymous access
 - Counter: Authenticated access, men menupunktet er synligt for ikke-authentikerede brugere
